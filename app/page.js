@@ -22,7 +22,6 @@ export default function Home() {
 
   const handleSave = async (values) => {
     const url = editing ? `/api/product/${editing._id}` : "/api/product";
-
     const method = editing ? "PUT" : "POST";
 
     const res = await fetch(url, {
@@ -46,27 +45,21 @@ export default function Home() {
   };
 
   return (
-    <div className="page-bg mt-9">
+    <div className="page-bg">
       {/* HEADER */}
-      <div
-        className="glass mx-auto 
-     mt-10px max-w-6xl p-6 flex justify-between items-center"
-      >
-        <div className="mb-4 pb-7">
-          <h1 className="text-3xl font-bold text-white">Product Management</h1>
-          <p className="text-sm text-slate-200">Modern inventory dashboard</p>
+      <div className="header-container">
+        <div className="header-content">
+          <h1>Dashboard</h1>
+          <p>Product Management</p>
         </div>
 
-        <button
-          onClick={() => setOpen(true)}
-          className="btn-primary flex items-center gap-2"
-        >
+        <button onClick={() => setOpen(true)} className="btn-primary">
           <Plus size={18} /> New Product
         </button>
       </div>
 
-      {/* TABLE */}
-      <div className="glass mx-auto pt-10 mt-8 max-w-6xl p-6">
+      {/* TABLE CONTAINER */}
+      <div className="table-container">
         <table className="table">
           <thead>
             <tr>
@@ -82,11 +75,8 @@ export default function Home() {
             {products.map((p) => (
               <tr key={p._id}>
                 <td className="font-semibold">{p.name}</td>
-
                 <td className="col-center">${p.price}</td>
-
                 <td className="col-center">{p.quantity}</td>
-
                 <td className="col-center">
                   {p.quantity > 0 ? (
                     <span className="badge-green">Available</span>
@@ -94,22 +84,22 @@ export default function Home() {
                     <span className="badge-red">Out of Stock</span>
                   )}
                 </td>
-
                 <td className="col-right">
-                  <div className="flex justify-end gap-4">
+                  <div className="action-buttons">
                     <button
                       onClick={() => {
                         setEditing(p);
                         setOpen(true);
                       }}
-                      className="text-indigo-300 hover:text-white"
+                      className="action-btn edit"
+                      title="Edit product"
                     >
                       <Edit size={18} />
                     </button>
-
                     <button
                       onClick={() => handleDelete(p._id)}
-                      className="text-red-400 hover:text-red-600"
+                      className="action-btn delete"
+                      title="Delete product"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -125,9 +115,7 @@ export default function Home() {
       {open && (
         <div className="modal-bg">
           <div className="modal">
-            <h2 className="text-xl font-semibold mb-4">
-              {editing ? "Edit Product" : "Add Product"}
-            </h2>
+            <h2>{editing ? "Edit Product" : "Add Product"}</h2>
 
             <Formik
               initialValues={{
@@ -140,55 +128,64 @@ export default function Home() {
               onSubmit={handleSave}
             >
               {({ values, handleChange, handleSubmit }) => (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <input
-                    name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    placeholder="Product Name"
-                    className="input"
-                  />
-
-                  <textarea
-                    name="description"
-                    value={values.description}
-                    onChange={handleChange}
-                    placeholder="Description"
-                    className="input"
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit}>
+                  <div className="space-y-4">
                     <input
-                      type="number"
-                      name="price"
-                      value={values.price}
+                      name="name"
+                      value={values.name}
                       onChange={handleChange}
-                      placeholder="Price"
+                      placeholder="Product Name"
                       className="input"
+                      required
                     />
-                    <input
-                      type="number"
-                      name="quantity"
-                      value={values.quantity}
+
+                    <textarea
+                      name="description"
+                      value={values.description}
                       onChange={handleChange}
-                      placeholder="Quantity"
+                      placeholder="Description"
                       className="input"
+                      rows="4"
                     />
+
+                    <div className="grid-cols-2">
+                      <input
+                        type="number"
+                        name="price"
+                        value={values.price}
+                        onChange={handleChange}
+                        placeholder="Price"
+                        className="input"
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={values.quantity}
+                        onChange={handleChange}
+                        placeholder="Quantity"
+                        className="input"
+                        min="0"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex justify-end gap-3 pt-4">
+                  <div className="modal-buttons">
                     <button
                       type="button"
                       onClick={() => {
                         setOpen(false);
                         setEditing(null);
                       }}
-                      className="rounded-xl border px-5 py-2"
+                      className="cancel-btn"
                     >
                       Cancel
                     </button>
                     <button type="submit" className="btn-primary">
-                      {editing ? "Update" : "Add"}
+                      {editing ? "Update Product" : "Add Product"}
                     </button>
                   </div>
                 </form>
